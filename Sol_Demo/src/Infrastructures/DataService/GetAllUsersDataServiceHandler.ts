@@ -28,8 +28,11 @@ export class GetAllUserDataServiceHandler extends UserDataServiceAbstract implem
             let db:IDatabase<any>=await this.postgresProvider.OpenSqlConnectionAsync(postgressConfig);
          
             // Need to Implement
- 
-            return new Array<UserModel>();
+            let result:UserModel[]=await db.any(`SELECT * FROM funcGetUser($1,$2) as f(UserIdentity uuid,FirstName Varchar(50),LastName Varchar(50),UserName Varchar(50))`,
+                                    ['GetAllUser',null]
+                                    );
+            console.log(result);
+            return result;
         }
         catch(ex)
         {

@@ -38,7 +38,7 @@ export class UpdateUserDataServiceHandler extends UserDataServiceAbstract implem
             let postgressConfig=this.SetPostgressConfig(this.configuration);
             let db:IDatabase<any>=await this.postgresProvider.OpenSqlConnectionAsync(postgressConfig);
 
-            // Need To Implement
+            await db.one(`SELECT funcSetUser($1,$2,$3,$4,$5,$6)`,['Update',request.UserIdentity,request.FirstName,request.LastName,request.UserLogin.UserName,request.UserLogin.Password]);
          
             return true;
         }

@@ -5,7 +5,7 @@ import {check,ValidationChain,validationResult } from "express-validator";
 export abstract class UserValidationAbstract{
 
     protected UserIdentityValidation():ValidationChain{
-        return check('UserIdentity').isMongoId();
+        return check('UserIdentity').isUUID();
     }
 
     protected FirstNameValidation():ValidationChain{

@@ -4,11 +4,43 @@ POST http://localhost:3000/api/user/createuser
 Content-Type: application/json
 
 {
-    "FirstName":"K",
+    "FirstName":"Kishor",
     "LastName":"Naik",
     "Login":{
         "UserName":"Kishor@gmail.com",
         "Password":"123456789"
     }
     
+}
+
+###
+
+POST http://localhost:3000/api/user/updateuser
+Content-Type: application/json
+
+{
+    "UserIdentity":"ad0a65ec-d8b8-40e3-953d-1000ae9b3885",
+    "FirstName":"Eshaan",
+    "LastName":"Naik",
+    "Login":{
+        "UserName":"eshaan@gmail.com",
+        "Password":"1234567"
+    }
+}
+
+###
+
+POST http://localhost:3000/api/user/getalluser
+Content-Type: application/json
+
+{
+
+}
+
+###
+POST http://localhost:3000/api/user/removeuser
+Content-Type: application/json
+
+{
+    "UserIdentity":"ad0a65ec-d8b8-40e3-953d-1000ae9b3885"
 }
