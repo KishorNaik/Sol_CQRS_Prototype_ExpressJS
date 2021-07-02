@@ -4,11 +4,13 @@ import { CreateUserCommand, CreateUserCommandHandler } from "../../../Applicatio
 import { RemoveUserCommand, RemoveUserCommandHandler } from "../../../Applications/Features/Commands/RemoveUserCommandHandler";
 import { UpdateUserCommand, UpdateUserCommandHandler } from "../../../Applications/Features/Commands/UpdateUserCommandHandler";
 import { WelcomeUserEmailEvent, WelcomeUserEmailHandler } from "../../../Applications/Features/Events/WelcomeUserEmailEventHandler";
+import { GetAllUserQueryHandler, GetAllUsersQuery } from "../../../Applications/Features/Queries/GetAllUsersQueryHandler";
 import { CreateUserValidation, CreateUserValidationHandler } from "../../../Applications/Validations/CreateUserValidationHandler";
 import { RemoveUserValidation, RemoveUserValidationHandler } from "../../../Applications/Validations/RemoveUserValidationHandler";
 import { UpdateUserValidation, UpdateUserValidationHandler } from "../../../Applications/Validations/UpdateUserValidationHandler";
 import UserController from "../../../Controllers/UserController";
 import { CreateUserDataService, CreateUserDataServiceHandler } from "../../../Infrastructures/DataService/CreateUserDataServiceHandler";
+import { GetAllUserDataServiceHandler, GetAllUsersDataService } from "../../../Infrastructures/DataService/GetAllUsersDataServiceHandler";
 import { RemoveUserDataService, RemoveUserDataServiceHandler } from "../../../Infrastructures/DataService/RemoveUserDataServiceHandler";
 import { UpdateUserDataService, UpdateUserDataServiceHandler } from "../../../Infrastructures/DataService/UpdateUserDataServiceHandler";
 
@@ -18,6 +20,8 @@ export const AddUserServiceExtension=function(bottleContainer:Bottle):void{
         bottleContainer.service("createUserDataServiceHandler",CreateUserDataServiceHandler,"postgresProvider","configurations");
         bottleContainer.service("updateUserDataServiceHandler",UpdateUserDataServiceHandler,"postgresProvider","configurations");
         bottleContainer.service("deleteUserDataServiceHandler",RemoveUserDataServiceHandler,"postgresProvider","configurations");
+
+        bottleContainer.service("getAllUsersDataServiceHandler",GetAllUserDataServiceHandler,"postgresProvider","configurations");
     }
 
     let CommanHandler=function():void{
@@ -28,6 +32,10 @@ export const AddUserServiceExtension=function(bottleContainer:Bottle):void{
 
     let EventHandler=function():void{
         bottleContainer.service("welcomeUserEventHandler",WelcomeUserEmailHandler);
+    }
+
+    let QueryHandler=function():void{
+        bottleContainer.service("getAllUserQueryHandler",GetAllUserQueryHandler,"mediatR");
     }
 
     let ValidationHandler=function():void{
@@ -58,6 +66,10 @@ export const AddUserServiceExtension=function(bottleContainer:Bottle):void{
         mediatR.Register(RemoveUserDataService,bottleContainer.container.deleteUserDataServiceHandler);
         mediatR.Register(RemoveUserCommand,bottleContainer.container.removeUserCommandHandler);
         mediatR.Register(RemoveUserValidation,bottleContainer.container.deleteUserValidationHandler);
+
+        // Get All Users
+        mediatR.Register(GetAllUsersDataService,bottleContainer.container.getAllUsersDataServiceHandler);
+        mediatR.Register(GetAllUsersQuery,bottleContainer.container.getAllUserQueryHandler);
     }
 
 
@@ -67,6 +79,7 @@ export const AddUserServiceExtension=function(bottleContainer:Bottle):void{
     CommanHandler();
     EventHandler();
     ValidationHandler();
+    QueryHandler();
     Controller();
     MediatRRegistration();
 }
