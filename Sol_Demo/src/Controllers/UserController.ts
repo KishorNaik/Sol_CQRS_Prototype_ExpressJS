@@ -7,9 +7,11 @@ import { HttpException } from "../../Frameworks/Middlewares/ExceptionHandling/Ex
 import { CreateUserCommand } from "../Applications/Features/Commands/CreateUserCommandHandler";
 import { RemoveUserCommand } from "../Applications/Features/Commands/RemoveUserCommandHandler";
 import { UpdateUserCommand } from "../Applications/Features/Commands/UpdateUserCommandHandler";
+import { GetAllUsersQuery } from "../Applications/Features/Queries/GetAllUsersQueryHandler";
 import { CreateUserValidation } from "../Applications/Validations/CreateUserValidationHandler";
 import { RemoveUserValidation } from "../Applications/Validations/RemoveUserValidationHandler";
 import { UpdateUserValidation } from "../Applications/Validations/UpdateUserValidationHandler";
+import UserModel from "../Models/UserModel";
 
 export default class UserController extends BaseController{
     
@@ -44,25 +46,30 @@ export default class UserController extends BaseController{
         await this.mediatR.SendAsync<ValidationChain[],RemoveUserValidation>(new RemoveUserValidation()),
         this.RemoveUserAsync.bind(this)
        );
+
+       // http://localhost:3000/api/user/getallusers
+       this.router.post(`${this.routePath}/getalluser`,this.GetAllUserAsync.bind(this));
+
     }
 
     
 
-    private async CreateUserAsync(requets:express.Request,response:express.Response,next:express.NextFunction): Promise<void>{
+    private async CreateUserAsync(request:express.Request,response:express.Response,next:express.NextFunction): Promise<void>{
 
         try
         {
             console.log(this.routePath);
-            const error=validationResult(requets);
+            const error=validationResult(request);
 
             if(!error.isEmpty()){
                 response.status(200).json(error);
             }
             else
             {
-                const {FirstName,LastName, Login:{UserName,Password}}=requets.body;
+                const {FirstName,LastName, Login:{UserName,Password}}=request.body;
 
                 let result=await this.mediatR.SendAsync<string,CreateUserCommand>(new CreateUserCommand(FirstName,LastName,UserName,Password));
+
                 response.status(200).json(result);
             }
         }
@@ -94,7 +101,6 @@ export default class UserController extends BaseController{
             next(ex);
         }
     }
-
     private async RemoveUserAsync(request:express.Request,response:express.Response,next:express.NextFunction):Promise<void>{
         try
         {
@@ -112,6 +118,25 @@ export default class UserController extends BaseController{
                 response.status(200).json(result);
             }
         
+        }
+        catch(ex)
+        {
+            next(ex);
+        }
+    }
+
+    private async GetAllUserAsync(request:express.Request,response:express.Response,next:express.NextFunction):Promise<void>{
+        try
+        {
+            let results=await this.mediatR.SendAsync<UserModel[],GetAllUsersQuery>(new GetAllUsersQuery());
+
+            if(results!=null && results?.length>=1){
+                response.status(200).json(results);
+            }
+            else
+            {
+                response.status(200).json({Error:"Record Not Found"});
+            }
         }
         catch(ex)
         {
